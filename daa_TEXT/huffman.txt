@@ -1,0 +1,51 @@
+# Huffman Coding in python
+string = 'BCAADDDCCACACAC'
+
+# Creating tree nodes
+class NodeTree(object):
+    def __init__(self, left=None, right=None):
+        self.left = left
+        self.right = right
+    def children(self):
+        return (self.left, self.right)
+    def nodes(self):
+        return (self.left, self.right)
+    def __str__(self):
+        return (self.left, self.right)
+
+# Main function implementing huffman coding
+def huffman_code_tree(node, left=True, binary=''): # binary is simple string 
+    if type(node) is str:     # node is a character in a string
+        return {node: binary}
+    (l, r) = node.children()  # children() returns left,right
+    d = dict() #dictionary to store codes like 100,110,11,etc.
+    d.update(huffman_code_tree(l, True, binary + '0')) #  + is string concatenation
+    d.update(huffman_code_tree(r, False, binary + '1'))
+    return d
+
+# Calculating frequency
+freq = {}               # freq is a dictionary
+for c in string:        # for character c in string
+    if c in freq:
+        freq[c] += 1    # for already present charcter ,increase frequency
+    else:
+        freq[c] = 1     # for new character ,set frequency = 1
+        
+freq = sorted(freq.items(), key=lambda x: x[1], reverse=True)     # descending sort ,x[1] means index=1 means we get only values from key val pair
+
+nodes = freq
+
+while len(nodes) > 1:  # characters in 'nodes' dictinary >1
+    (key1, c1) = nodes[-1]  #last 
+    (key2, c2) = nodes[-2]  # second last
+    nodes = nodes[:-2]   # characters remained in 'nodes' dictinary except last two
+    new_node = NodeTree(key1, key2) #NodeTree is a class
+    nodes.append((new_node, c1 + c2))  # addition of values of key1,key2 and make new node and append in 'nodes' dictinary
+
+    nodes = sorted(nodes, key=lambda x: x[1], reverse=True) # again sort in descending order
+
+huffmanCode = huffman_code_tree(nodes[0][0])  #main function ,start from root node  #huffmanCode is a dictionary
+
+
+for (char, frequency) in freq:
+    print(char," : ", huffmanCode[char])
